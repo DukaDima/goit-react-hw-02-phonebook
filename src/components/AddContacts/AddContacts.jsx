@@ -1,11 +1,19 @@
 import React, {Component}from "react";
 import s from './AddContacts.module.css'
+import PropTypes from 'prop-types';
 
 class AddContacts extends Component {
+
+    static propTypes= {
+   name: PropTypes.string,
+   phone: PropTypes.string
+    }
+    
     state = {
         name: '',
         phone: ''
     }
+
     nameChange = e => {
         this.setState({name:e.currentTarget.value})
     }
@@ -14,7 +22,6 @@ class AddContacts extends Component {
     }
     handleSubmit = e => {
         e.preventDefault()
-        console.log(this.state)
         this.props.onSubmit(this.state)
         this.setState({name:'',phone:''})
     }
@@ -25,8 +32,8 @@ render() {
 
         <form className={s.AddContact__form} onSubmit={this.handleSubmit}>
             <div className={s.AddContact__input}>
-                 <h3 className={s.AddContact__title}>name</h3>
-            <input
+                <label > <p className={s.AddContact__title}>name</p>  
+                  <input
                 type="text"
                 name="name"
                 pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
@@ -35,12 +42,13 @@ render() {
                 value={this.state.name}
                 onChange={this.nameChange}
             />
-
+                </label>
          </div>
            
             
             <div className={s.AddContact__input}>
-     <h3 className={s.AddContact__title}>number</h3>
+             
+                  <label > <p className={s.AddContact__title}>number</p>  
             <input
                 type="tel"
                 name="number"
@@ -50,7 +58,7 @@ render() {
                 value={this.state.phone}
                 onChange={this.phoneChange}
             />
-
+              </label>
             </div>
        
             <button type="submit" className={s.AddContact__button}>Add</button>
@@ -62,4 +70,5 @@ render() {
 
 }
 export default AddContacts
+
 

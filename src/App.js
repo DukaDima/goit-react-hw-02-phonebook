@@ -1,27 +1,33 @@
 import React, { Component } from 'react';
 import ContactsList from './components/ContactsList/ContactsList';
 import AddContacts from './components/AddContacts/AddContacts';
+import Filter from './components/Filter/Filter';
+import Title from './components/Title/Title';
 import shortid from 'shortid';
+import PropTypes from 'prop-types';
 
 class App extends Component {
+  static propTypes = {
+    contacts: PropTypes.array,
+    filter: PropTypes.string,
+  };
+
   state = {
-    contacts: [
-      { id: 'id-1', name: 'Anna Bishop', phone: '124-567-7950' },
-      { id: 'id-2', name: 'Petya Ivanov', phone: '124-567-8902' },
-      { id: 'id-3', name: 'Uasya Petrov', phone: '124-567-3344' },
-    ],
+    contacts: [],
+    filter: '',
   };
   AddContact = ({ name, phone }) => {
-    console.log(name);
-    console.log(phone);
     const contact = {
       id: shortid.generate(),
       name,
       phone,
     };
-    this.setState(prevState => ({
-      contacts: [contact, ...prevState.contacts],
-    }));
+
+    this.state.contacts.find(elem => elem.name === contact.name)
+      ? alert(`${contact.name} is already in contacts`)
+      : this.setState(prevState => ({
+          contacts: [contact, ...prevState.contacts],
+        }));
   };
 
   deleteContact = contactId => {
@@ -29,16 +35,34 @@ class App extends Component {
       contacts: prevState.contacts.filter(contact => contact.id !== contactId),
     }));
   };
+  filterContact = e => {
+    this.setState({ filter: e.currentTarget.value });
+  };
+  getVisibleContact = () => {
+    const { contacts, filter } = this.state;
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter),
+    );
+  };
+
   render() {
-    const { contacts } = this.state;
+    const { filter } = this.state;
     const onDeleteContact = this.deleteContact;
+    const onFilterContact = this.filterContact;
+    const visibleContacts = this.getVisibleContact();
 
     return (
       <>
-        <h2>Добавить контакт</h2>
+        <h1>Телефонная книга</h1>
+        <Title title={'Добавить контакт'} />
         <AddContacts onSubmit={this.AddContact} />
-        <h2>Список контактов</h2>
-        <ContactsList contacts={contacts} onDeleteContact={onDeleteContact} />
+        <Filter value={filter} onChange={onFilterContact} />
+        <Title title={'Список контактов'} />
+        <ContactsList
+          contacts={visibleContacts}
+          onDeleteContact={onDeleteContact}
+        />
       </>
     );
   }
